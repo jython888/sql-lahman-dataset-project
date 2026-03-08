@@ -61,7 +61,7 @@ CREATE TABLE bronze.lahman_pitching (
 	BB INT,
 	SO INT,
 	BAOpp FLOAT,
-	ERA FLAOT,
+	ERA FLOAT,
 	IBB INT,
 	WP INT,
 	HBP INT,
@@ -101,7 +101,7 @@ CREATE TABLE bronze.lahman_parks (
 	parkkey NVARCHAR(100),
 	parkname NVARCHAR(100),
 	city NVARCHAR(100),
-	state NVARCHAR(100,
+	state NVARCHAR(100),
 	country NVARCHAR(100)
 ); 
 GO
