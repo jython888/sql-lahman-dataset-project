@@ -124,7 +124,7 @@ CREATE TABLE bronze.lahman_people (
 	deathCountry NVARCHAR(100),
 	deathState NVARCHAR(100),
 	deathCity NVARCHAR(100),
-	nameFirst NVARCHAR(100,
+	nameFirst NVARCHAR(100),
 	nameLast NVARCHAR(100),
 	nameGiven NVARCHAR(100),
 	weight INT,
