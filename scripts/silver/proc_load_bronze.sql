@@ -418,3 +418,38 @@ SELECT
 	TRIM(teamIDlahman45) AS teamIDlahman45,
 	TRIM(teamIDretro) AS teamIDretro
 FROM bronze.lahman_teams
+
+
+INSERT INTO silver.lahman_managers (
+	playerID,
+	yearID,
+	teamID,
+	lgID,
+	stint,
+	G,
+	W,
+	L,
+	WinPct,
+	[Rank],
+	plyrMgr)
+
+SELECT
+	TRIM(playerID) AS playerID,
+	yearID,
+	TRIM(teamID) AS teamID,
+	TRIM(lgID) AS lgID,
+	ISNULL(inseason, 0) AS stint,
+	ISNULL(G, 0) AS G,
+	ISNULL(W, 0) AS W,
+	ISNULL(L, 0) AS L,
+	CAST(ISNULL(W, 0) * 1.0 / NULLIF(ISNULL(W, 0) + ISNULL(L, 0), 0) AS DECIMAL(5,3)) AS WinPct,
+	ISNULL([Rank], 0) AS [Rank],
+	CASE WHEN TRIM(UPPER(plyrMgr)) = 'Y' THEN 1 ELSE 0 END AS plyrMgr
+FROM bronze.lahman_managers
+*/
+
+
+
+
+
+
