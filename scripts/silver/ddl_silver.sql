@@ -1,6 +1,4 @@
 
-
-
 IF OBJECT_ID('silver.lahman_batting', 'U') IS NOT NULL
 	DROP TABLE silver.lahman_batting;
 
@@ -34,3 +32,171 @@ CREATE TABLE silver.lahman_batting (
 	SH INT,
 	SF INT
 );
+
+IF OBJECT_ID('silver.lahman_pitching', 'U') IS NOT NULL
+	DROP TABLE silver.lahman_pitching;
+
+CREATE TABLE silver.lahman_pitching (
+	playerID NVARCHAR(50),
+	yearID INT,
+	stint INT,
+	teamID NVARCHAR(50),
+	lgID NVARCHAR(50),
+	W INT,
+	L INT,
+	G INT,
+	GS INT,
+	CG INT,
+	SHO INT,
+	SV INT,
+	IP DECIMAL(6,1),
+	IP_Math DECIMAL(6,2),
+	H INT,
+	ER INT,
+	HR INT,
+	BB INT,
+	SO INT,
+	BAOpp DECIMAL(4,3),
+	ERA DECIMAL(5,2),
+	WHIP DECIMAL(5,2),
+	FIP DECIMAL(5,2),
+	[K%] DECIMAL(5,2),
+	[BB%] DECIMAL (5,2),
+	[K/BB] DECIMAL(5,2),
+	[H/9] DECIMAL(5,2),
+	[HR/9] DECIMAL(5,2),
+	IBB INT,
+	WP INT,
+	HBP INT,
+	BK INT,
+	BFP INT,
+	GF INT,
+	R INT,
+	SH INT,
+	SF INT,
+	GIDP INT
+);
+
+IF OBJECT_ID('silver.lahman_fielding', 'U') IS NOT NULL
+	DROP TABLE silver.lahman_fielding;
+
+CREATE TABLE silver.lahman_fielding (
+	playerID NVARCHAR(50),
+	yearID INT,
+	stint INT,
+	teamID NVARCHAR(50),
+	lgID NVARCHAR(50),
+	POS NVARCHAR(50),
+	G INT,
+	GS INT,
+	InningsPlayed DECIMAL(7,2),
+	PO INT,
+	A INT,
+	E INT,
+	CH INT,
+	DP INT,
+	PB INT,
+	WP INT,
+	SB INT,
+	CS INT,
+	ZR DECIMAL(6,3),
+	FPCT DECIMAL(6,4),
+	[RF/9] DECIMAL(10,2),
+	DRS_Lite DECIMAL(10,2)
+);
+
+IF OBJECT_ID('silver.lahman_people', 'U') IS NOT NULL
+	DROP TABLE silver.lahman_people;
+
+CREATE TABLE silver.lahman_people ( 
+	playerID NVARCHAR(50),
+	birthDate DATE,
+	birthCountry NVARCHAR(50),
+	birthState NVARCHAR(50),
+	birthCity NVARCHAR(50),
+	deathDate DATE,
+	deathCountry NVARCHAR(50),
+	deathState NVARCHAR(50),
+	deathCity NVARCHAR(50),
+	nameFirst NVARCHAR(50),
+	nameLast NVARCHAR(50),
+	nameGiven NVARCHAR(50),
+	fullName NVARCHAR(50),
+	height INT,
+	Height_FT_IN NVARCHAR(50),
+	weight INT,
+	bats NVARCHAR(50),
+	throws NVARCHAR(50),
+	debut DATE,
+	finalGame DATE,
+	CareerLength INT,
+	bbrefID NVARCHAR(50),
+	retroID NVARCHAR(50)
+);
+
+IF OBJECT_ID('silver.lahman_teams', 'U') IS NOT NULL
+	DROP TABLE silver.lahman_teams;
+
+CREATE TABLE silver.lahman_teams (
+	yearID INT,
+	lgID NVARCHAR(50),
+	teamID NVARCHAR(50),
+	franchID NVARCHAR(50),
+	divID NVARCHAR(50),
+	[Rank] INT,
+	G INT,
+	GHome INT,
+	W INT,
+	L INT,
+	WinPct DECIMAL(5,3),
+	DivWin NVARCHAR(50),
+	WCWin NVARCHAR(50),
+	LgWin NVARCHAR(50),
+	WSWin NVARCHAR(50),
+	R INT,
+	RA INT,
+	RunDiff INT,
+	AB INT,
+	H INT,
+	[2B] INT,
+	[3B] INT,
+	HR INT,
+	BB INT,
+	SO INT,
+	SB INT,
+	CS INT,
+	HBP INT,
+	SF INT,
+	AVG DECIMAL(4,3),
+	OBP DECIMAL(4,3),
+	SLG DECIMAL(4,3),
+	OPS DECIMAL(5,3),
+	[TB] INT,
+	ER INT,
+	ERA DECIMAL(5,2),
+	WHIP DECIMAL(5,2),
+	FIP DECIMAL(5,2),
+	CG INT,
+	SHO INT,
+	SV INT,
+	IPouts DECIMAL(6,1),
+	HA INT,
+	HRA INT,
+	BBA INT,
+	SOA INT,
+	E INT,
+	DP INT,
+	FPct DECIMAL(5,3),
+	name NVARCHAR(50),
+	park NVARCHAR(100),
+	attendance INT,
+	BPF INT,
+	PPF INT,
+	teamIDBR NVARCHAR(50),
+	teamIDlahman45 NVARCHAR(50),
+	teamIDretro NVARCHAR(50)
+);
+
+
+
+
