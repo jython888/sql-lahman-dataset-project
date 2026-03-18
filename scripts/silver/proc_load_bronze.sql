@@ -342,7 +342,11 @@ SET @end_time = GETDATE();
 	PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
 	PRINT '>> ---------';
 
-
+-- Loading silver.lahman_teams
+	SET @start_time = GETDATE();
+	PRINT '>> Truncating Table: silver.lahman_teams';
+	TRUNCATE TABLE silver.lahman_teams;
+	PRINT '>> Inserting Data Into: silver.lahman_teams';
 INSERT INTO silver.lahman_teams (
 	yearID,
 	lgID,
@@ -471,8 +475,15 @@ SELECT
 	TRIM(teamIDlahman45) AS teamIDlahman45,
 	TRIM(teamIDretro) AS teamIDretro
 FROM bronze.lahman_teams
+SET @end_time = GETDATE();
+	PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+	PRINT '>> ---------';
 
-
+-- Loading silver.lahman_managers
+	SET @start_time = GETDATE();
+	PRINT '>> Truncating Table: silver.lahman_managers';
+	TRUNCATE TABLE silver.lahman_managers;
+	PRINT '>> Inserting Data Into: silver.lahman_managers';
 INSERT INTO silver.lahman_managers (
 	playerID,
 	yearID,
@@ -499,8 +510,15 @@ SELECT
 	ISNULL([Rank], 0) AS [Rank],
 	CASE WHEN TRIM(UPPER(plyrMgr)) = 'Y' THEN 1 ELSE 0 END AS plyrMgr
 FROM bronze.lahman_managers
+SET @end_time = GETDATE();
+	PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+	PRINT '>> ---------';
 
-
+-- Loading silver.lahman_salaries
+	SET @start_time = GETDATE();
+	PRINT '>> Truncating Table: silver.lahman_salaries';
+	TRUNCATE TABLE silver.lahman_salaries;
+	PRINT '>> Inserting Data Into: silver.lahman_salaries';
 INSERT INTO silver.lahman_salaries (
 	yearID,
 	teamID,
@@ -517,7 +535,9 @@ SELECT
 	CAST(ISNULL(salary,0) AS BIGINT) AS salary,
 	CAST(ISNULL(salary, 0) / 1000000.0 AS DECIMAL(10,2)) AS salary_m
 FROM bronze.lahman_salaries
-
+SET @end_time = GETDATE();
+	PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+	PRINT '>> ---------';
 
 
 
