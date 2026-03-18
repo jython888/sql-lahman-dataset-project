@@ -198,8 +198,15 @@ SELECT
 	CAST(ISNULL(SF, 0) AS INT) AS SF,
 	CAST(ISNULL(GIDP, 0) AS INT) AS GIDP
 FROM bronze.lahman_pitching
+	SET @end_time = GETDATE();
+	PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+	PRINT '>> ---------';
 
-
+-- Loading silver.lahman_fielding
+	SET @start_time = GETDATE();
+	PRINT '>> Truncating Table: silver.lahman_fielding';
+	TRUNCATE TABLE silver.lahman_fielding;
+	PRINT '>> Inserting Data Into: silver.lahman_fielding';
 WITH PositionAverages AS (
     -- Step 1: Calculate the baseline (League Average) for each year and position
     SELECT 
@@ -267,6 +274,9 @@ FROM bronze.lahman_fielding AS f
 LEFT JOIN PositionAverages AS pa
 ON f.yearID = pa.yearID
 AND f.POS = pa.POS;
+SET @end_time = GETDATE();
+	PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+	PRINT '>> ---------';
 
 
 
