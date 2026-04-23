@@ -1,0 +1,62 @@
+from pybaseball import statcast
+from sqlalchemy import create_engine
+import pandas as pd
+
+# 1. Connection
+engine = create_engine(
+    r"mssql+pyodbc://DESKTOP-7R6RBDH\SQLEXPRESS/Baseball?"
+    "driver=ODBC+Driver+17+for+SQL+Server&"
+    "Trusted_Connection=yes"
+)
+
+
+def ingest_full_season(year):
+    # Define the months (Baseball season is generally April - Oct)
+    months = [
+        ('03-20', '03-31'),  # Early season/Spring Training starts
+        ('04-01', '04-30'),
+        ('05-01', '05-31'),
+        ('06-01', '06-30'),
+        ('07-01', '07-31'),
+        ('08-01', '08-31'),
+        ('09-01', '09-30'),
+        ('10-01', '10-31')
+    ]
+
+    # First, we wipe the table clean for a fresh start of the full year
+    # (Only do this once at the start of the script)
+    first_pass = True
+
+    for start, end in months:
+        start_dt = f"{year}-{start}"
+        end_dt = f"{year}-{end}"
+
+        print(f"--- Fetching {start_dt} to {end_dt} ---")
+
+        try:
+            df_month = statcast(start_dt=start_dt, end_dt=end_dt)
+
+            if not df_month.empty:
+                # If it's the first month, 'replace' the table.
+                # After that, 'append' so we don't delete the previous months.
+                mode = 'replace' if first_pass else 'append'
+
+                df_month.to_sql('statcast_raw',
+                                con=engine,
+                                schema='bronze',
+                                if_exists=mode,
+                                index=False)
+
+                print(f"Successfully added {len(df_month)} rows.")
+                first_pass = False
+            else:
+                print("No data found for this period.")
+
+        except Exception as e:
+            print(f"Error during {start_dt}: {e}")
+
+    print("\n--- Full Season Bronze Ingestion Complete ---")
+
+
+if __name__ == "__main__":
+    ingest_full_season(2024)
