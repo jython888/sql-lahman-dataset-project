@@ -1,0 +1,48 @@
+import pandas as pd
+from sqlalchemy import create_engine
+
+engine = create_engine(
+    r"mssql+pyodbc://DESKTOP-7R6RBDH\SQLEXPRESS/Baseball?"
+    "driver=ODBC+Driver+17+for+SQL+Server&"
+    "Trusted_Connection=yes"
+)
+
+
+def create_silver_warehouse():
+    print("Extracting from Bronze...")
+    # Pulling everything once into memory to split it
+    df = pd.read_sql("SELECT * FROM bronze.statcast_raw", con=engine)
+
+    # --- Transformation: Fix Names ---
+    names = df['player_name'].str.split(', ', expand=True)
+    df['player_name'] = names[1].fillna('') + ' ' + names[0].fillna('')
+
+    # --- 1. Identity Table (Who/When) ---
+    print("Creating silver.pitch_identity...")
+    identity_cols = ['player_name', 'pitcher', 'game_date',
+                     'game_pk', 'at_bat_number', 'pitch_number']
+    df[identity_cols].to_sql('pitch_identity', engine,
+                             schema='silver', if_exists='replace', index=False)
+
+    # --- 2. Physics Table (The Ball's Flight) ---
+    print("Creating silver.pitch_physics...")
+    # Note: Using 'pitcher' and 'game_date' as links (Foreign Keys)
+    physics_cols = ['pitcher', 'game_date', 'pitch_type',
+                    'release_speed', 'release_spin_rate', 'pfx_x', 'pfx_z']
+    df[physics_cols].to_sql('pitch_physics', engine,
+                            schema='silver', if_exists='replace', index=False)
+
+    # --- 3. Batted Ball Table (The Result) ---
+    print("Creating silver.batted_ball...")
+    # We only include rows where there WAS a hit to keep this table small
+    batted_df = df[df['launch_speed'].notnull()].copy()
+    batted_cols = ['pitcher', 'game_date', 'launch_speed',
+                   'launch_angle', 'hit_distance_sc', 'events']
+    batted_df[batted_cols].to_sql(
+        'batted_ball', engine, schema='silver', if_exists='replace', index=False)
+
+    print("Warehouse splitting complete!")
+
+
+if __name__ == "__main__":
+    create_silver_warehouse()
