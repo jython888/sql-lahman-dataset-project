@@ -1,0 +1,205 @@
+DDL: Silver Table Schema
+
+/*===========================================================
+DDL: Pitch Physics
+============================================================*/
+DROP TABLE IF EXISTS silver.statcast_pitch_physics_clean;
+
+CREATE TABLE silver.statcast_pitch_physics_clean (
+    pitch_id          INT PRIMARY KEY, -- Enforces uniqueness
+    pitcher           INT NOT NULL,
+    game_date         DATE NOT NULL,
+    pitch_type        VARCHAR(10) NOT NULL,
+    release_speed     DECIMAL(4,1),    -- Example: 101.5
+    release_spin_rate INT,             -- Spins are whole numbers
+    pfx_x             DECIMAL(5,2),    -- Precise movement
+    pfx_z             DECIMAL(5,2)
+);
+
+INSERT INTO silver.statcast_pitch_physics_clean (
+    pitch_id, 
+    pitcher, 
+    game_date, 
+    pitch_type, 
+    release_speed, 
+    release_spin_rate, 
+    pfx_x, 
+    pfx_z
+)
+SELECT 
+    pitch_id, 
+    pitcher, 
+    game_date, 
+    pitch_type, 
+    release_speed, 
+    release_spin_rate, 
+    pfx_x, 
+    pfx_z
+FROM silver.statcast_pitch_physics
+WHERE release_speed IS NOT NULL 
+  AND pitch_type IS NOT NULL;
+
+/*===============================================
+DDL: Batted Ball
+================================================*/
+DROP TABLE IF EXISTS silver.statcast_batted_ball_clean;
+
+CREATE TABLE silver.statcast_batted_ball_clean (
+    pitch_id         INT PRIMARY KEY,
+    pitcher          INT NOT NULL,
+    game_date        DATE NOT NULL,
+    launch_speed     DECIMAL(4,1), -- Exit Velocity
+    launch_angle     INT,           -- Launch Angle
+    hit_distance_sc  INT,           -- Distance in feet
+    events           VARCHAR(50)    -- e.g., 'single', 'home_run'
+);
+
+INSERT INTO silver.statcast_batted_ball_clean (
+    pitch_id, 
+    pitcher, 
+    game_date, 
+    launch_speed, 
+    launch_angle, 
+    hit_distance_sc, 
+    events
+)
+SELECT 
+    pitch_id, 
+    pitcher, 
+    game_date, 
+    launch_speed, 
+    launch_angle, 
+    hit_distance_sc, 
+    events
+FROM silver.statcast_batted_ball
+WHERE launch_speed IS NOT NULL;
+
+DROP TABLE IF EXISTS silver.statcast_pitch_identity;
+
+CREATE TABLE 
+
+
+/*========================================================
+DDL: Plate Discipline
+=======================================================*/
+DROP TABLE IF EXISTS silver.statcast_plate_discipline;
+
+CREATE TABLE silver.statcast_plate_discipline (
+    pitch_id       INT PRIMARY KEY, -- The link to all other tables
+    pitcher        INT NOT NULL,
+    batter         INT NOT NULL,
+    plate_x        DECIMAL(5,2),    -- Left/Right position over the plate
+    plate_z        DECIMAL(5,2),    -- Height over the plate
+    sz_top         DECIMAL(5,2),    -- Top of that specific batter's strike zone
+    sz_bot         DECIMAL(5,2),    -- Bottom of that specific batter's strike zone
+    zone           INT,             -- Statcast zone number (1-14)
+    description    VARCHAR(50)      -- e.g., 'called_strike', 'ball', 'swinging_strike'
+);
+
+INSERT INTO silver.statcast_plate_discipline (
+pitch_id, 
+pitcher, 
+batter, 
+plate_x, 
+plate_z, 
+sz_top, 
+sz_bot, 
+zone, 
+description
+)
+
+SELECT 
+pitch_id, 
+pitcher, 
+batter, 
+plate_x, 
+plate_z, 
+sz_top, 
+sz_bot, 
+zone, 
+description
+FROM bronze.statcast_raw;
+
+/*==========================================================
+DDL: Swing Metrics
+==========================================================*/
+
+DROP TABLE IF EXISTS silver.statcast_game_context;
+
+CREATE TABLE silver.statcast_game_context (
+    pitch_id       INT PRIMARY KEY,
+    inning         INT,
+    inning_topbot  VARCHAR(3),      -- 'Top' or 'Bot'
+    balls          INT,
+    strikes        INT,
+    outs_when_up   INT,
+    on_3b          INT,             -- Usually the Player ID of the runner
+    on_2b          INT,
+    on_1b          INT,
+    fld_score      INT,             -- Fielding team's current score
+    bat_score      INT              -- Batting team's current score
+);
+
+INSERT INTO silver.statcast_game_context (
+pitch_id, 
+inning, 
+inning_topbot, 
+balls, 
+strikes, 
+outs_when_up, 
+on_3b, 
+on_2b, 
+on_1b, 
+fld_score, 
+bat_score
+)
+
+SELECT 
+pitch_id, 
+inning, 
+inning_topbot, 
+balls, 
+strikes, 
+outs_when_up, 
+on_3b, 
+on_2b, 
+on_1b, 
+fld_score, 
+bat_score
+FROM bronze.statcast_raw;
+
+/*======================================================
+DDL: Player Metadata
+======================================================*/
+
+DROP TABLE IF EXISTS silver.statcast_player_metadata;
+
+CREATE TABLE silver.statcast_player_metadata (
+    pitch_id INT PRIMARY KEY,
+    batter INT NOT NULL,
+    pitcher INT NOT NULL,
+    fld_score INT,
+    bat_score INT,
+    stand VARCHAR(10),
+    p_throws VARCHAR(10)
+);
+
+INSERT INTO silver.statcast_player_metadata (
+pitch_id,
+batter,
+pitcher,
+fld_score,
+bat_score,
+stand,
+p_throws
+)
+
+SELECT
+pitch_id,
+batter,
+pitcher,
+fld_score,
+bat_score,
+stand,
+p_throws
+FROM bronze.statcast_raw;
